@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{%block body_block%}
+
+
+  <h2>Blog Details</h2>
+   <h1 class='posttitle loader'><p>{{post.title}}</p><h1>
+
+  {% if post.publish_date %}
+     <p>{{post.publish_date}}</p>
+  {% else %}
+     <a class="btn btn-default" href="{%url 'blog_app1:post_publish' pk=post.pk %}">Publish</a>
+     {% endif %}
+   <p class='postcontent' >{{post.text|safe|linebreaksbr}}</p>
+
+   {% if user.is_authenticated %}
+       <a class="btn btn-primary" href="{% url 'blog_app1:post_update' pk=post.pk %}">Update</a>
+       <a class="btn btn-primary" href="{% url 'blog_app1:post_delete' pk=post.pk %}">Delete</a>
+
+   {% endif %}
+  <p>Published By: {{post.auth}}</p>
+  <p>Published DateTime: {{post.publish_date}}</p>
+  <p> Create DateTime: {{post.create_date}}</p>
+<!-- Add comment section -->
+ <a class="btn btn-primary" href="{%url 'blog_app1:add_comment_to_post' pk=post.pk %}">Add Comment</a>
+<div class="container">
+  <!--check if this comments is of the related names -->
+  {% for comment in post.comments.all %}
+  <br>
+    {% if user.is_authenticated %}
+    <p>Comment: {{comment.text}}</p>
+       {% if comment.approved_comments %}
+          <p>{{ comment.create_date}}</p>
+          <p>{{ comment.text|safe|linebreaks}}</p>
+          Author is : {{ comment.auth}}</p>
+        <p> <a class="btn btn-primary" href="{%url 'blog_app1:comment_delete' pk=comment.pk %}">Delete Comment</a>
+          {% else  %} <!-- comment not approved -->
+        <a class="btn btn-primary" href="{%url 'blog_app1:comment_delete' pk=comment.pk %}">Delete Comment</a>
+        {% endif %}
+    <a class="btn btn-primary" href="{%url 'blog_app1:comment_approve' pk=comment.pk %}">Approve Comment</a>
+
+    {% endif %}
+    {% empty %}
+    No comment posted
+  {% endfor %}
+</div>
+
+{% endblock %}
